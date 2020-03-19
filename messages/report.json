@@ -1,0 +1,6 @@
+{
+  "commandDescription": "display the test results for a given deployment",
+  "formatFlagDescription": "the format to save create the test results in; options: junit",
+  "deployidFlagDescription": "the deployment id to get test results for",
+  "errorNoOrgResults": "No results found for the org '%s'."
+}

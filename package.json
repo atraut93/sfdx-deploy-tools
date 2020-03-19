@@ -9,7 +9,8 @@
     "@oclif/errors": "^1",
     "@salesforce/command": "^2",
     "@salesforce/core": "^2",
-    "tslib": "^1"
+    "tslib": "^1",
+    "xmlbuilder2": "^1.7.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
@@ -44,8 +45,11 @@
     "commands": "./lib/commands",
     "bin": "sfdx",
     "topics": {
-      "hello": {
+      "deploytools": {
         "description": "Commands to help with deploy process."
+      },
+      "deploytools:test": {
+        "description": "Commands to help with tests run for a given deploy."
       }
     },
     "devPlugins": [
