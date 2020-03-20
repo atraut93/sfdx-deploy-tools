@@ -5,7 +5,6 @@
 
 [![Version](https://img.shields.io/npm/v/@andrew.trautmann/sfdx-deploy-tools.svg)](https://npmjs.org/package/@andrew.trautmann/sfdx-deploy-tools)
 [![CircleCI](https://circleci.com/gh/atraut93/sfdx-deploy-tools/tree/master.svg?style=shield)](https://circleci.com/gh/atraut93/sfdx-deploy-tools/tree/master)
-<!-- [![Appveyor CI](https://ci.appveyor.com/api/projects/status/github/atraut93/sfdx-deploy-tools?branch=master&svg=true)](https://ci.appveyor.com/project/heroku/sfdx-deploy-tools/branch/master) -->
 [![Codecov](https://codecov.io/gh/atraut93/sfdx-deploy-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/atraut93/sfdx-deploy-tools)
 [![Known Vulnerabilities](https://snyk.io/test/github/atraut93/sfdx-deploy-tools/badge.svg)](https://snyk.io/test/github/atraut93/sfdx-deploy-tools)
 [![Downloads/week](https://img.shields.io/npm/dw/@andrew.trautmann/sfdx-deploy-tools.svg)](https://npmjs.org/package/@andrew.trautmann/sfdx-deploy-tools)
