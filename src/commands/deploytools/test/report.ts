@@ -21,7 +21,7 @@ function createProperty(name: string, value: any): object {
   };
 }
 
-function convertToXUnit(deployResult: any): string {
+function convertToXUnit(deployResult: any, connData: any): string {
   let testResults = deployResult.details.runTestResult;
   let propertyList = [];
   let testCases = [];
@@ -30,7 +30,7 @@ function convertToXUnit(deployResult: any): string {
       "testSuite": {
         "@name": "force.apex",
         "@timestamp": deployResult.startDate,
-        "@hostname": "",
+        "@hostname": connData.loginUrl,
         "properties": {
           "property": propertyList
         },
@@ -64,11 +64,23 @@ function convertToXUnit(deployResult: any): string {
   documentEl.testSuites.testSuite["@errors"] = 0;
   documentEl.testSuites.testSuite["@time"] = testResults.totalTime;
 
+  // <property name="passRate" value="84%"/>
+  // <property name="failRate" value="16%"/>
+  
   propertyList.push(createProperty("outcome", deployResult.status));
   propertyList.push(createProperty("testsRan", deployResult.numberTestsTotal));
   propertyList.push(createProperty("passing", deployResult.numberTestsCompleted));
-  propertyList.push(createProperty("failing", deployResult.numberTestsTotal));
+  propertyList.push(createProperty("failing", deployResult.numberTestErrors));
   propertyList.push(createProperty("skipped", 0));
+  if (deployResult.numberTestsTotal > 0) {
+    let passRate = 100 * (deployResult.numberTestsCompleted / deployResult.numberTestsTotal);
+    let failRate = 100 - passRate;
+    propertyList.push(createProperty("passRate", `${passRate.toFixed(0)}%`));
+    propertyList.push(createProperty("failRate", `${failRate.toFixed(0)}%`));
+  }
+  propertyList.push(createProperty("hostname", connData.loginUrl));
+  propertyList.push(createProperty("testRunId", deployResult.id));
+  propertyList.push(createProperty("userId", deployResult.createdBy));
 
   return ''+create({ encoding: "UTF-8" }, documentEl).end({ prettyPrint: true });
 }
@@ -149,7 +161,7 @@ export default class Report extends SfdxCommand {
     let outputFilename: string;
     switch (this.flags.format) {
       case 'xunit':
-        outputString = convertToXUnit(deployRes);
+        outputString = convertToXUnit(deployRes, conn);
         outputFilename = `${deployRes.id}-test-results.xml`;
         break;
       default:
