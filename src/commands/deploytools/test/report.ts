@@ -1,11 +1,14 @@
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
-import { create } from 'xmlbuilder2';
+
+import converters from '../../../lib/converters';
+import { TestResultConverter } from '../../../lib/converters';
 import { exec2String } from '../../../lib/exec';
+
 import { writeFileSync } from 'fs';
-const path = require('path');
-const mkdirp = require('mkdirp');
+import * as mkdirp from 'mkdirp';
+import * as path from 'path';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -14,89 +17,23 @@ Messages.importMessagesDirectory(__dirname);
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@andrew.trautmann/sfdx-deploy-tools', 'report');
 
-function createProperty(name: string, value: any): object {
-  return {
-    "@name": name,
-    "@value": value
-  };
-}
-
-function convertToXUnit(deployResult: any, connData: any): string {
-  let testResults = deployResult.details.runTestResult;
-  let propertyList = [];
-  let testCases = [];
-  let documentEl = {
-    "testSuites": {
-      "testSuite": {
-        "@name": "force.apex",
-        "@timestamp": deployResult.startDate,
-        "@hostname": connData.loginUrl,
-        "properties": {
-          "property": propertyList
-        },
-        "testcase": testCases
-      }
-    }
-  };
-
-  (testResults.successes||[]).forEach(testRes => {
-    testCases.push({
-      "@name": testRes.methodName,
-      "@classname": testRes.name,
-      "@time": (+testRes.time||0)/1000.00
-    });
-  });
-
-  (testResults.failures||[]).forEach(testRes => {
-    testCases.push({
-      "@name": testRes.methodName,
-      "@classname": testRes.name,
-      "@time": (+testRes.time||0)/1000.00,
-      "failure": {
-        "@message": testRes.message,
-        "$text": testRes.stackTrace
-      }
-    });
-  });
-
-  documentEl.testSuites.testSuite["@tests"] = deployResult.numberTestsTotal;
-  documentEl.testSuites.testSuite["@failures"] = deployResult.numberTestErrors;
-  documentEl.testSuites.testSuite["@errors"] = 0;
-  documentEl.testSuites.testSuite["@time"] = testResults.totalTime;
-
-  // <property name="passRate" value="84%"/>
-  // <property name="failRate" value="16%"/>
-  
-  propertyList.push(createProperty("outcome", deployResult.status));
-  propertyList.push(createProperty("testsRan", deployResult.numberTestsTotal));
-  propertyList.push(createProperty("passing", deployResult.numberTestsCompleted));
-  propertyList.push(createProperty("failing", deployResult.numberTestErrors));
-  propertyList.push(createProperty("skipped", 0));
-  if (deployResult.numberTestsTotal > 0) {
-    let passRate = 100 * (deployResult.numberTestsCompleted / deployResult.numberTestsTotal);
-    let failRate = 100 - passRate;
-    propertyList.push(createProperty("passRate", `${passRate.toFixed(0)}%`));
-    propertyList.push(createProperty("failRate", `${failRate.toFixed(0)}%`));
-  }
-  propertyList.push(createProperty("hostname", connData.loginUrl));
-  propertyList.push(createProperty("testRunId", deployResult.id));
-  propertyList.push(createProperty("userId", deployResult.createdBy));
-
-  return ''+create({ encoding: "UTF-8" }, documentEl).end({ prettyPrint: true });
-}
-
 export default class Report extends SfdxCommand {
 
   public static description = messages.getMessage('commandDescription');
 
-  public static examples = [];
+  public static examples = [
+    'sfdx deploytools:test:report -u <org alias> -l',
+    'sfdx deploytools:test:report -u <org alias> -l -d test-results',
+    'sfdx deploytools:test:report -u <org alias> -i <deploy id>',
+    'sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results',
+    'sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit'
+  ];
 
   protected static flagsConfig = {
-    // flag with a value (-n, --name=VALUE)
     format: flags.enum({
       char: 'f',
       description: messages.getMessage('formatFlagDescription'),
-      options: ['xunit'],
+      options: Object.keys(converters),
       default: 'xunit'
     }),
     deployid: flags.string({
@@ -132,14 +69,14 @@ export default class Report extends SfdxCommand {
     // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
     const conn = this.org.getConnection();
 
-    //get deploy id either from parameter or latest deploy result run
+    // get deploy id either from parameter or latest deploy result run
     if (!this.flags.quiet) { this.ux.startSpinner('Getting deploy result'); }
     let deployId;
     let deployRes;
     if (this.flags.deployid) {
       deployId = this.flags.deployid;
     } else if (this.flags.latest) {
-      //Get latest deploy id from force:mdapi:deploy:report call
+      // Get latest deploy id from force:mdapi:deploy:report call
       const response = await exec2String(`sfdx force:mdapi:deploy:report -u ${this.org.getUsername()} | grep "0Af"`);
       const regex = /(0Af\w{12,15})/.exec(response);
       if (regex && regex.length > 0) {
@@ -152,21 +89,14 @@ export default class Report extends SfdxCommand {
       if (!this.flags.quiet) { this.ux.stopSpinner(); }
       throw new SfdxError('deploy id could not be found');
     }
-    
+
     deployRes = await conn.metadata.checkDeployStatus(deployId, true);
     if (!this.flags.quiet) { this.ux.stopSpinner(); }
 
     if (!this.flags.quiet) { this.ux.startSpinner('Processing test results'); }
-    let outputString: string;
-    let outputFilename: string;
-    switch (this.flags.format) {
-      case 'xunit':
-        outputString = convertToXUnit(deployRes, conn);
-        outputFilename = `${deployRes.id}-test-results.xml`;
-        break;
-      default:
-        break;
-    }
+    const converter: TestResultConverter = converters[this.flags.format];
+    const outputString: string = converter.convert(deployRes, conn);
+    const outputFilename: string = converter.getFilename(deployRes);
     if (!this.flags.quiet) { this.ux.stopSpinner(); }
 
     if (this.flags.verbose) {
