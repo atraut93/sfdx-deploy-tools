@@ -22,7 +22,7 @@ $ npm install -g @atraut93/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@atraut93/sfdx-deploy-tools/0.0.0 darwin-x64 node-v13.8.0
+@atraut93/sfdx-deploy-tools/0.0.1 darwin-x64 node-v13.8.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -30,26 +30,31 @@ USAGE
 ```
 <!-- usagestop -->
 <!-- commands -->
-* [`sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-helloorg--n-string--f--v-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestreport--f-xunit--i-string---l--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
-print a greeting and your org IDs
+display the test results for a given deployment
 
 ```
 USAGE
-  $ sfdx hello:org [-n <string>] [-f] [-v <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel 
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] 
+  [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
-  -f, --force                                                                       example boolean flag
-  -n, --name=name                                                                   name to print
+  -d, --outputdir=outputdir                                                         the directory to store the generated
+                                                                                    report in
+
+  -f, --format=(xunit)                                                              [default: xunit] the format to save
+                                                                                    create the test results in
+
+  -i, --deployid=deployid                                                           the deployment id to get test
+                                                                                    results for
+
+  -l, --latest                                                                      use the latest deploy information
 
   -u, --targetusername=targetusername                                               username or alias for the target
                                                                                     org; overrides default target org
-
-  -v, --targetdevhubusername=targetdevhubusername                                   username or alias for the dev hub
-                                                                                    org; overrides default dev hub org
 
   --apiversion=apiversion                                                           override the api version used for
                                                                                     api requests made by this command
@@ -59,14 +64,13 @@ OPTIONS
   --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
                                                                                     this command invocation
 
-EXAMPLES
-  $ sfdx hello:org --targetusername myOrg@example.com --targetdevhubusername devhub@org.com
-     Hello world! This is org: MyOrg and I will be around until Tue Mar 20 2018!
-     My hub org id is: 00Dxx000000001234
-  
-  $ sfdx hello:org --name myname --targetusername myOrg@example.com
-     Hello myname! This is org: MyOrg and I will be around until Tue Mar 20 2018!
+  --quiet                                                                           nothing emitted stdout
+
+  --verbose                                                                         emit additional command output to
+                                                                                    stdout
 ```
+
+_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.1/lib/commands/deploytools/test/report.js)_
 <!-- commandsstop -->
 <!-- debugging-your-plugin -->
 # Debugging your plugin
