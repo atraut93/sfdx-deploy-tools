@@ -1,6 +1,6 @@
 {
   "name": "@andrew.trautmann/sfdx-deploy-tools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Andrew Trautmann",
   "bugs": "https://github.com/atraut93/sfdx-deploy-tools/issues",
   "dependencies": {

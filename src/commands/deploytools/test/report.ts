@@ -2,7 +2,7 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { create } from 'xmlbuilder2';
-import { exec2JSON } from '../../../lib/exec';
+import { exec2String } from '../../../lib/exec';
 import { writeFileSync } from 'fs';
 const path = require('path');
 const mkdirp = require('mkdirp');
@@ -14,21 +14,6 @@ Messages.importMessagesDirectory(__dirname);
 // or any library that is using the messages framework can also be loaded this way.
 const messages = Messages.loadMessages('@andrew.trautmann/sfdx-deploy-tools', 'report');
 
-// The type we are querying for
-type ApexClass = {
-  Name: string;
-}
-type ApexTestResult = {
-  Id: string;
-  ApexClass: ApexClass;
-  Message: string;
-  MethodName: string;
-  Outcome: string; //Pass, Fail, CompileFail, Skip
-  RunTime: number;
-  StackTrace: string;
-  TestTimestamp: string;
-}
-
 function createProperty(name: string, value: any): object {
   return {
     "@name": name,
@@ -36,7 +21,8 @@ function createProperty(name: string, value: any): object {
   };
 }
 
-function convertToXUnit(deployResult: any, testResults: Array<ApexTestResult>): string {
+function convertToXUnit(deployResult: any): string {
+  let testResults = deployResult.details.runTestResult;
   let propertyList = [];
   let testCases = [];
   let documentEl = {
@@ -53,51 +39,36 @@ function convertToXUnit(deployResult: any, testResults: Array<ApexTestResult>): 
     }
   };
 
-  let numSuccess = 0;
-  let numSkipped = 0;
-  let numFailure = 0;
-  let total = testResults.length;
-  let totalTime = 0;
-
-  testResults.forEach(testRes => {
-    let resultEl = {
-      "@name": testRes.MethodName,
-      "@classname": testRes.ApexClass.Name,
-      "@time": (testRes.RunTime||0)/1000.00,
-      "failure": undefined
-    };
-    totalTime += (testRes.RunTime||0);
-    switch (testRes.Outcome) {
-      case "Pass":
-        numSuccess++;
-        break;
-      case "Fail":
-        numFailure++;
-        resultEl.failure = {
-          "@message": testRes.Message,
-          "$text": testRes.StackTrace
-        };
-        break;
-      case "Skip":
-        numSkipped++;
-        break;
-      default:
-        break;
-    }
-
-    testCases.push(resultEl);
+  (testResults.successes||[]).forEach(testRes => {
+    testCases.push({
+      "@name": testRes.methodName,
+      "@classname": testRes.name,
+      "@time": (+testRes.time||0)/1000.00
+    });
   });
 
-  documentEl.testSuites.testSuite["@tests"] = total;
-  documentEl.testSuites.testSuite["@failures"] = numFailure;
-  documentEl.testSuites.testSuite["@errors"] = 0;
-  documentEl.testSuites.testSuite["@time"] = totalTime /1000.00;
+  (testResults.failures||[]).forEach(testRes => {
+    testCases.push({
+      "@name": testRes.methodName,
+      "@classname": testRes.name,
+      "@time": (+testRes.time||0)/1000.00,
+      "failure": {
+        "@message": testRes.message,
+        "$text": testRes.stackTrace
+      }
+    });
+  });
 
-  propertyList.push(createProperty("outcome", numFailure > 0 ? "Failed" : "Passed"));
-  propertyList.push(createProperty("testsRan", total));
-  propertyList.push(createProperty("passing", numSuccess));
-  propertyList.push(createProperty("failing", numFailure));
-  propertyList.push(createProperty("skipped", numSkipped));
+  documentEl.testSuites.testSuite["@tests"] = deployResult.numberTestsTotal;
+  documentEl.testSuites.testSuite["@failures"] = deployResult.numberTestErrors;
+  documentEl.testSuites.testSuite["@errors"] = 0;
+  documentEl.testSuites.testSuite["@time"] = testResults.totalTime;
+
+  propertyList.push(createProperty("outcome", deployResult.status));
+  propertyList.push(createProperty("testsRan", deployResult.numberTestsTotal));
+  propertyList.push(createProperty("passing", deployResult.numberTestsCompleted));
+  propertyList.push(createProperty("failing", deployResult.numberTestsTotal));
+  propertyList.push(createProperty("skipped", 0));
 
   return ''+create({ encoding: "UTF-8" }, documentEl).end({ prettyPrint: true });
 }
@@ -150,58 +121,41 @@ export default class Report extends SfdxCommand {
     const conn = this.org.getConnection();
 
     //get deploy id either from parameter or latest deploy result run
-    if (!this.flags.quiet) {
-      this.ux.startSpinner('Getting deploy result');
-    }
+    if (!this.flags.quiet) { this.ux.startSpinner('Getting deploy result'); }
+    let deployId;
     let deployRes;
     if (this.flags.deployid) {
-      let rawDeploy = await conn.request(`/services/data/v48.0/metadata/deployRequest/${this.flags.deployid}`);
-      deployRes = rawDeploy['deployResult'];
+      deployId = this.flags.deployid;
     } else if (this.flags.latest) {
-      deployRes = {
-        startDate: '2020-03-19T14:10:04.000+0000',
-        completedDate: '2020-03-19T14:11:09.000+0000',
-        id: '0Af6g00000SW3ms'
-      };
-      const response = await exec2JSON(`sfdx force:mdapi:deploy:report -u ${this.org.getUsername()} --json`);
-      deployRes = response.result;
-      if (!deployRes) {
-        throw new SfdxError(messages.getMessage('errorNoLatestDeploy', [response.message]));
+      //Get latest deploy id from force:mdapi:deploy:report call
+      const response = await exec2String(`sfdx force:mdapi:deploy:report -u ${this.org.getUsername()} | grep "0Af"`);
+      const regex = /(0Af\w{12,15})/.exec(response);
+      if (regex && regex.length > 0) {
+        deployId = regex[0];
       }
-    }
-    if (!this.flags.quiet) {
-      this.ux.stopSpinner();
+      deployId = regex ? regex[0] : null;
     }
 
-    const query = `SELECT ApexClass.Name, Id, Message, MethodName, Outcome, RunTime, StackTrace, TestTimestamp
-    FROM ApexTestResult
-    WHERE TestTimestamp >= ${deployRes.startDate} AND TestTimestamp <= ${deployRes.completedDate}
-    ORDER BY ApexClass.Name ASC, MethodName ASC`;
-    // Query the org
-    if (!this.flags.quiet) {
-      this.ux.startSpinner('Getting test results');
+    if (!deployId) {
+      if (!this.flags.quiet) { this.ux.stopSpinner(); }
+      throw new SfdxError('deploy id could not be found');
     }
-    const result = await conn.query<ApexTestResult>(query);
-    if (!this.flags.quiet) {
-      this.ux.stopSpinner();
-    }
+    
+    deployRes = await conn.metadata.checkDeployStatus(deployId, true);
+    if (!this.flags.quiet) { this.ux.stopSpinner(); }
 
-    // Organization will always return one result, but this is an example of throwing an error
-    // The output and --json will automatically be handled for you.
-    if (!result.records) {
-      throw new SfdxError(messages.getMessage('errorNoOrgResults', [this.org.getOrgId()]));
-    }
-
+    if (!this.flags.quiet) { this.ux.startSpinner('Processing test results'); }
     let outputString: string;
     let outputFilename: string;
     switch (this.flags.format) {
       case 'xunit':
-        outputString = convertToXUnit(deployRes, result.records);
+        outputString = convertToXUnit(deployRes);
         outputFilename = `${deployRes.id}-test-results.xml`;
         break;
       default:
         break;
     }
+    if (!this.flags.quiet) { this.ux.stopSpinner(); }
 
     if (this.flags.verbose) {
       this.ux.log(outputString);
@@ -216,6 +170,6 @@ export default class Report extends SfdxCommand {
     }
 
     // Return an object to be displayed with --json
-    return { orgId: this.org.getOrgId(), testResults: result.records };
+    return deployRes;
   }
 }
