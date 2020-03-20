@@ -20,8 +20,7 @@ jobs:
       - run:
           name: Submitting code coverage to codecov
           command: |
-            ./node_modules/.bin/nyc report --reporter text-lcov > coverage.lcov
-            bash <(curl -s https://codecov.io/bash)
+            bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
   node-10:
     <<: *test
     docker:
