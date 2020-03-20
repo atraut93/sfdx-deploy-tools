@@ -156,7 +156,7 @@ export default class Report extends SfdxCommand {
     let deployRes;
     if (this.flags.deployid) {
       let rawDeploy = await conn.request(`/services/data/v48.0/metadata/deployRequest/${this.flags.deployid}`);
-      deployRes = rawDeploy.deployResult;
+      deployRes = rawDeploy['deployResult'];
     } else if (this.flags.latest) {
       deployRes = {
         startDate: '2020-03-19T14:10:04.000+0000',
