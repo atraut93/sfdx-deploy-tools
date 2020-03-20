@@ -2,6 +2,10 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { create } from 'xmlbuilder2';
+import { exec2JSON } from '../../../lib/exec';
+import { writeFileSync } from 'fs';
+const path = require('path');
+const mkdirp = require('mkdirp');
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -11,10 +15,10 @@ Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('@atraut93/sfdx-deploy-tools', 'report');
 
 // The type we are querying for
-interface ApexClass {
+type ApexClass = {
   Name: string;
 }
-interface ApexTestResult {
+type ApexTestResult = {
   Id: string;
   ApexClass: ApexClass;
   Message: string;
@@ -32,7 +36,7 @@ function createProperty(name: string, value: any): object {
   };
 }
 
-function convertToJUnit(deployResult: any, testResults: Array<ApexTestResult>): string {
+function convertToXUnit(deployResult: any, testResults: Array<ApexTestResult>): string {
   let propertyList = [];
   let testCases = [];
   let documentEl = {
@@ -95,35 +99,39 @@ function convertToJUnit(deployResult: any, testResults: Array<ApexTestResult>): 
   propertyList.push(createProperty("failing", numFailure));
   propertyList.push(createProperty("skipped", numSkipped));
 
-  let xmlString = ''+create({"encoding": "UTF-8"}, documentEl).end({prettyPrint:true});
-  console.log(xmlString);
-  return xmlString;
+  return ''+create({ encoding: "UTF-8" }, documentEl).end({ prettyPrint: true });
 }
 
 export default class Report extends SfdxCommand {
 
   public static description = messages.getMessage('commandDescription');
 
-  public static examples = [
-  `$ sfdx deploytools:test:report --targetusername myOrg@example.com
-  Hello world! This is org: MyOrg and I will be around until Tue Mar 20 2018!
-  `
-  ];
+  public static examples = [];
 
   protected static flagsConfig = {
     // flag with a value (-n, --name=VALUE)
     format: flags.enum({
       char: 'f',
       description: messages.getMessage('formatFlagDescription'),
-      options: ['junit'],
-      default: 'junit'
+      options: ['xunit'],
+      default: 'xunit'
     }),
     deployid: flags.string({
-      char: 'd',
+      char: 'i',
       description: messages.getMessage('deployidFlagDescription'),
-      required: true
+      exclusive: ['latest']
     }),
-    quiet: flags.builtin()
+    latest: flags.boolean({
+      char: 'l',
+      description: messages.getMessage('latestFlagDescription'),
+      exclusive: ['deployid']
+    }),
+    outputdir: flags.directory({
+      char: 'd',
+      description: messages.getMessage('outputdirFlagDescription')
+    }),
+    quiet: flags.builtin(),
+    verbose: flags.builtin()
   };
 
   // Comment this out if your command does not require an org username
@@ -134,35 +142,80 @@ export default class Report extends SfdxCommand {
 
   public async run(): Promise<AnyJson> {
 
+    if (!this.flags.latest && !this.flags.deployid) {
+      throw new SfdxError(messages.getMessage('errorFlagRequired'));
+    }
+
     // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
     const conn = this.org.getConnection();
-    
-    const deployRes = await conn.request(`/services/data/v48.0/metadata/deployRequest/${this.flags.deployid}`);
+
+    //get deploy id either from parameter or latest deploy result run
+    if (!this.flags.quiet) {
+      this.ux.startSpinner('Getting deploy result');
+    }
+    let deployRes;
+    if (this.flags.deployid) {
+      let rawDeploy = await conn.request(`/services/data/v48.0/metadata/deployRequest/${this.flags.deployid}`);
+      deployRes = rawDeploy.deployResult;
+    } else if (this.flags.latest) {
+      deployRes = {
+        startDate: '2020-03-19T14:10:04.000+0000',
+        completedDate: '2020-03-19T14:11:09.000+0000',
+        id: '0Af6g00000SW3ms'
+      };
+      const response = await exec2JSON(`sfdx force:mdapi:deploy:report -u ${this.org.getUsername()} --json`);
+      deployRes = response.result;
+      if (!deployRes) {
+        throw new SfdxError(messages.getMessage('errorNoLatestDeploy', [response.message]));
+      }
+    }
+    if (!this.flags.quiet) {
+      this.ux.stopSpinner();
+    }
+
     const query = `SELECT ApexClass.Name, Id, Message, MethodName, Outcome, RunTime, StackTrace, TestTimestamp
     FROM ApexTestResult
-    WHERE TestTimestamp >= ${deployRes.deployResult.startDate} AND TestTimestamp <= ${deployRes.deployResult.completedDate}
+    WHERE TestTimestamp >= ${deployRes.startDate} AND TestTimestamp <= ${deployRes.completedDate}
     ORDER BY ApexClass.Name ASC, MethodName ASC`;
     // Query the org
+    if (!this.flags.quiet) {
+      this.ux.startSpinner('Getting test results');
+    }
     const result = await conn.query<ApexTestResult>(query);
+    if (!this.flags.quiet) {
+      this.ux.stopSpinner();
+    }
 
     // Organization will always return one result, but this is an example of throwing an error
     // The output and --json will automatically be handled for you.
-    if (!result.records || result.records.length <= 0) {
+    if (!result.records) {
       throw new SfdxError(messages.getMessage('errorNoOrgResults', [this.org.getOrgId()]));
     }
 
-    let outputString = convertToJUnit(deployRes.deployResult, result.records);
-    // if (!this.flags.quiet) {
-    //   this.ux.log(outputString);
-    // }
+    let outputString: string;
+    let outputFilename: string;
+    switch (this.flags.format) {
+      case 'xunit':
+        outputString = convertToXUnit(deployRes, result.records);
+        outputFilename = `${deployRes.id}-test-results.xml`;
+        break;
+      default:
+        break;
+    }
 
-    // result.records.forEach(element => {
-    //   if (!this.flags.quiet) {
-    //     this.ux.log(`${element.ApexClass.Name}.${element.MethodName}: ${element.Outcome} in ${element.RunTime||0}ms`);
-    //   }
-    // });
+    if (this.flags.verbose) {
+      this.ux.log(outputString);
+    }
+
+    if (this.flags.outputdir && outputFilename) {
+      const finalDirectory = path.resolve(this.flags.outputdir);
+      await mkdirp(finalDirectory);
+      if (!this.flags.quiet) { this.ux.startSpinner(`Writing result file to ${this.flags.outputdir}/${outputFilename}`); }
+      writeFileSync(path.resolve(finalDirectory, outputFilename), outputString);
+      if (!this.flags.quiet) { this.ux.stopSpinner(); }
+    }
 
     // Return an object to be displayed with --json
-    return { orgId: this.org.getOrgId(), outputString };
+    return { orgId: this.org.getOrgId(), testResults: result.records };
   }
 }

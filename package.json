@@ -9,6 +9,8 @@
     "@oclif/errors": "^1",
     "@salesforce/command": "^2",
     "@salesforce/core": "^2",
+    "mkdirp": "^1.0.3",
+    "strip-color": "^0.1.0",
     "tslib": "^1",
     "xmlbuilder2": "^1.7.0"
   },

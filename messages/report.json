@@ -1,6 +1,10 @@
 {
   "commandDescription": "display the test results for a given deployment",
-  "formatFlagDescription": "the format to save create the test results in; options: junit",
+  "formatFlagDescription": "the format to save create the test results in",
   "deployidFlagDescription": "the deployment id to get test results for",
+  "latestFlagDescription": "use the latest deploy information",
+  "outputdirFlagDescription": "the directory to store the generated report in",
+  "errorFlagRequired": "Please specify either the --latest or --deployid flags",
+  "errorNoLatestDeploy": "The latest deploy could not be found; try again using a deployid: %s",
   "errorNoOrgResults": "No results found for the org '%s'."
 }
