@@ -1,16 +1,16 @@
-@atraut93/sfdx-deploy-tools
+@andrew.trautmann/sfdx-deploy-tools
 =====================
 
 
 
-[![Version](https://img.shields.io/npm/v/@atraut93/sfdx-deploy-tools.svg)](https://npmjs.org/package/@atraut93/sfdx-deploy-tools)
+[![Version](https://img.shields.io/npm/v/@andrew.trautmann/sfdx-deploy-tools.svg)](https://npmjs.org/package/@andrew.trautmann/sfdx-deploy-tools)
 [![CircleCI](https://circleci.com/gh/atraut93/sfdx-deploy-tools/tree/master.svg?style=shield)](https://circleci.com/gh/atraut93/sfdx-deploy-tools/tree/master)
 [![Appveyor CI](https://ci.appveyor.com/api/projects/status/github/atraut93/sfdx-deploy-tools?branch=master&svg=true)](https://ci.appveyor.com/project/heroku/sfdx-deploy-tools/branch/master)
 [![Codecov](https://codecov.io/gh/atraut93/sfdx-deploy-tools/branch/master/graph/badge.svg)](https://codecov.io/gh/atraut93/sfdx-deploy-tools)
 [![Greenkeeper](https://badges.greenkeeper.io/atraut93/sfdx-deploy-tools.svg)](https://greenkeeper.io/)
 [![Known Vulnerabilities](https://snyk.io/test/github/atraut93/sfdx-deploy-tools/badge.svg)](https://snyk.io/test/github/atraut93/sfdx-deploy-tools)
-[![Downloads/week](https://img.shields.io/npm/dw/@atraut93/sfdx-deploy-tools.svg)](https://npmjs.org/package/@atraut93/sfdx-deploy-tools)
-[![License](https://img.shields.io/npm/l/@atraut93/sfdx-deploy-tools.svg)](https://github.com/atraut93/sfdx-deploy-tools/blob/master/package.json)
+[![Downloads/week](https://img.shields.io/npm/dw/@andrew.trautmann/sfdx-deploy-tools.svg)](https://npmjs.org/package/@andrew.trautmann/sfdx-deploy-tools)
+[![License](https://img.shields.io/npm/l/@andrew.trautmann/sfdx-deploy-tools.svg)](https://github.com/andrew.trautmann/sfdx-deploy-tools/blob/master/package.json)
 
 <!-- toc -->
 * [Debugging your plugin](#debugging-your-plugin)
@@ -18,11 +18,11 @@
 <!-- install -->
 <!-- usage -->
 ```sh-session
-$ npm install -g @atraut93/sfdx-deploy-tools
+$ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@atraut93/sfdx-deploy-tools/0.0.1 darwin-x64 node-v13.8.0
+@andrew.trautmann/sfdx-deploy-tools/0.0.1 darwin-x64 node-v13.8.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND

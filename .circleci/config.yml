@@ -46,7 +46,7 @@ jobs:
 
 workflows:
   version: 2
-  "@atraut93/sfdx-deploy-tools":
+  "@andrew.trautmann/sfdx-deploy-tools":
     jobs:
       - node-latest
       - node-8
