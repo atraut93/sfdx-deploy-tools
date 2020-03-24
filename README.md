@@ -11,6 +11,7 @@
 [![License](https://img.shields.io/npm/l/@andrew.trautmann/sfdx-deploy-tools.svg)](https://github.com/andrew.trautmann/sfdx-deploy-tools/blob/master/package.json)
 
 <!-- toc -->
+
 <!-- tocstop -->
 <!-- install -->
 <!-- usage -->
@@ -19,7 +20,7 @@ $ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@andrew.trautmann/sfdx-deploy-tools/0.0.4 darwin-x64 node-v13.8.0
+@andrew.trautmann/sfdx-deploy-tools/0.0.5 darwin-x64 node-v13.8.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -27,16 +28,17 @@ USAGE
 ```
 <!-- usagestop -->
 <!-- commands -->
-* [`sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestreport--f-xunit--i-string---l--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestreport--f-xunit--i-string---l--s--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 display the test results for a given deployment
 
 ```
 USAGE
-  $ sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-d <directory>] [-u <string>] [--apiversion <string>] 
-  [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx deploytools:test:report [-f xunit] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion 
+  <string>] [--quiet] [--verbose] [--json] [--loglevel 
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
   -d, --outputdir=outputdir                                                         the directory to store the generated
@@ -49,6 +51,9 @@ OPTIONS
                                                                                     results for
 
   -l, --latest                                                                      use the latest deploy information
+
+  -s, --source                                                                      use the source deploy command rather
+                                                                                    than mdapi
 
   -u, --targetusername=targetusername                                               username or alias for the target
                                                                                     org; overrides default target org
@@ -74,5 +79,5 @@ EXAMPLES
   sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit
 ```
 
-_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.4/lib/commands/deploytools/test/report.js)_
+_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.5/lib/commands/deploytools/test/report.js)_
 <!-- commandsstop -->
