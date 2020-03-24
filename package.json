@@ -59,10 +59,12 @@
     "bin": "sfdx",
     "topics": {
       "deploytools": {
-        "description": "Commands to help with deploy process."
-      },
-      "deploytools:test": {
-        "description": "Commands to help with tests run for a given deploy."
+        "description": "Commands to help with deploy process.",
+        "subtopics": {
+          "test": {
+            "description": "Commands to help with tests run for a given deploy."
+          }
+        }
       }
     },
     "devPlugins": [
