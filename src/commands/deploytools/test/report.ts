@@ -46,6 +46,10 @@ export default class Report extends SfdxCommand {
       description: messages.getMessage('latestFlagDescription'),
       exclusive: ['deployid']
     }),
+    source: flags.boolean({
+      char: 's',
+      description: messages.getMessage('sourceFlagDescription')
+    }),
     outputdir: flags.directory({
       char: 'd',
       description: messages.getMessage('outputdirFlagDescription')
@@ -70,14 +74,15 @@ export default class Report extends SfdxCommand {
     const conn = this.org.getConnection();
 
     // get deploy id either from parameter or latest deploy result run
-    if (!this.flags.quiet) { this.ux.startSpinner('Getting deploy result'); }
+    if (!this.flags.quiet && !this.flags.json) { this.ux.startSpinner(messages.getMessage('spinnerGettingDeployResults')); }
     let deployId;
     let deployRes;
     if (this.flags.deployid) {
       deployId = this.flags.deployid;
     } else if (this.flags.latest) {
       // Get latest deploy id from force:mdapi:deploy:report call
-      const response = await exec2String(`sfdx force:mdapi:deploy:report -u ${this.org.getUsername()} | grep "0Af"`);
+      const callType = this.flags.source ? 'source' : 'mdapi';
+      const response = await exec2String(`sfdx force:${callType}:deploy:report -u ${this.org.getUsername()} | grep "0Af"`);
       const regex = /(0Af\w{12,15})/.exec(response);
       if (regex && regex.length > 0) {
         deployId = regex[0];
@@ -86,29 +91,29 @@ export default class Report extends SfdxCommand {
     }
 
     if (!deployId) {
-      if (!this.flags.quiet) { this.ux.stopSpinner(); }
+      if (!this.flags.quiet && !this.flags.json) { this.ux.stopSpinner(); }
       throw new SfdxError('deploy id could not be found');
     }
 
     deployRes = await conn.metadata.checkDeployStatus(deployId, true);
-    if (!this.flags.quiet) { this.ux.stopSpinner(); }
+    if (!this.flags.quiet && !this.flags.json) { this.ux.stopSpinner(); }
 
-    if (!this.flags.quiet) { this.ux.startSpinner('Processing test results'); }
+    if (!this.flags.quiet && !this.flags.json) { this.ux.startSpinner(messages.getMessage('spinnerProcessingTestResults')); }
     const converter: TestResultConverter = converters[this.flags.format];
     const outputString: string = converter.convert(deployRes, conn);
     const outputFilename: string = converter.getFilename(deployRes);
-    if (!this.flags.quiet) { this.ux.stopSpinner(); }
+    if (!this.flags.quiet && !this.flags.json) { this.ux.stopSpinner(); }
 
-    if (this.flags.verbose) {
+    if (this.flags.verbose && !this.flags.json) {
       this.ux.log(outputString);
     }
 
     if (this.flags.outputdir && outputFilename) {
       const finalDirectory = path.resolve(this.flags.outputdir);
       await mkdirp(finalDirectory);
-      if (!this.flags.quiet) { this.ux.startSpinner(`Writing result file to ${this.flags.outputdir}/${outputFilename}`); }
+      if (!this.flags.quiet && !this.flags.json) { this.ux.startSpinner(messages.getMessage('spinnerWritingFile', [`${this.flags.outputdir}${path.sep}${outputFilename}`])); }
       writeFileSync(path.resolve(finalDirectory, outputFilename), outputString);
-      if (!this.flags.quiet) { this.ux.stopSpinner(); }
+      if (!this.flags.quiet && !this.flags.json) { this.ux.stopSpinner(); }
     }
 
     // Return an object to be displayed with --json

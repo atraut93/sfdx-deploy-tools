@@ -14,8 +14,8 @@ export class XUnit implements TestResultConverter {
         const propertyList = [];
         const testCases = [];
         const documentEl = {
-            testSuites: {
-                testSuite: {
+            testsuites: {
+                testsuite: {
                     '@name': 'force.apex',
                     '@timestamp': deployResult.startDate,
                     '@hostname': connData.loginUrl,
@@ -47,10 +47,10 @@ export class XUnit implements TestResultConverter {
             });
         });
 
-        documentEl.testSuites.testSuite['@tests'] = deployResult.numberTestsTotal;
-        documentEl.testSuites.testSuite['@failures'] = deployResult.numberTestErrors;
-        documentEl.testSuites.testSuite['@errors'] = 0;
-        documentEl.testSuites.testSuite['@time'] = testResults.totalTime;
+        documentEl.testsuites.testsuite['@tests'] = deployResult.numberTestsTotal;
+        documentEl.testsuites.testsuite['@failures'] = deployResult.numberTestErrors;
+        documentEl.testsuites.testsuite['@errors'] = 0;
+        documentEl.testsuites.testsuite['@time'] = (+testResults.totalTime || 0) / 1000.00;
 
         propertyList.push(createProperty('outcome', deployResult.status));
         propertyList.push(createProperty('testsRan', deployResult.numberTestsTotal));

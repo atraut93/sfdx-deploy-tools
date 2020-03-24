@@ -3,8 +3,12 @@
   "formatFlagDescription": "the format to save create the test results in",
   "deployidFlagDescription": "the deployment id to get test results for",
   "latestFlagDescription": "use the latest deploy information",
+  "sourceFlagDescription": "use the source deploy command rather than mdapi",
   "outputdirFlagDescription": "the directory to store the generated report in",
   "errorFlagRequired": "Please specify either the --latest or --deployid flags",
   "errorNoLatestDeploy": "The latest deploy could not be found; try again using a deployid: %s",
-  "errorNoOrgResults": "No results found for the org '%s'."
+  "errorNoOrgResults": "No results found for the org '%s'.",
+  "spinnerGettingDeployResults": "Getting deploy result",
+  "spinnerProcessingTestResults": "Processing test results",
+  "spinnerWritingFile": "Writing result file to %s"
 }
