@@ -34,12 +34,14 @@ describe('xunit converter', () => {
         expect(actualXmlString).to.not.be.empty;
 
         const actualXml = create(actualXmlString).node;
-        expect(select('//testSuite', actualXml).length).to.equal(1);
+        const testSuites = select('//testSuite', actualXml);
+        expect(testSuites.length).to.equal(1);
+        const testSuite = testSuites[0];
         //Check testSuite properties
-        expect(select1('//testSuite/@hostname', actualXml).value).to.equal(connectionDetails.loginUrl);
-        expect(select1('//testSuite/@tests', actualXml).value).to.equal('0');
-        expect(select1('//testSuite/@failures', actualXml).value).to.equal('0');
-        expect(select1('//testSuite/@errors', actualXml).value).to.equal('0');
+        expect(testSuite.getAttribute('hostname')).to.equal(connectionDetails.loginUrl);
+        expect(testSuite.getAttribute('tests')).to.equal('0');
+        expect(testSuite.getAttribute('failures')).to.equal('0');
+        expect(testSuite.getAttribute('errors')).to.equal('0');
 
         expect(select1('//property[@name=\'outcome\']', actualXml).getAttribute('value')).to.equal(deployResTest.status);
         expect(select1('//property[@name=\'testsRan\']', actualXml).getAttribute('value')).to.equal('0');
@@ -92,12 +94,14 @@ describe('xunit converter', () => {
         expect(actualXmlString).to.not.be.empty;
 
         const actualXml = create(actualXmlString).node;
-        expect(select('//testSuite', actualXml).length).to.equal(1);
+        const testSuites = select('//testSuite', actualXml);
+        expect(testSuites.length).to.equal(1);
+        const testSuite = testSuites[0];
         //Check testSuite properties
-        expect(select1('//testSuite/@hostname', actualXml).value).to.equal(connectionDetails.loginUrl);
-        expect(select1('//testSuite/@tests', actualXml).value).to.equal('2');
-        expect(select1('//testSuite/@failures', actualXml).value).to.equal('0');
-        expect(select1('//testSuite/@errors', actualXml).value).to.equal('0');
+        expect(testSuite.getAttribute('hostname')).to.equal(connectionDetails.loginUrl);
+        expect(testSuite.getAttribute('tests')).to.equal('2');
+        expect(testSuite.getAttribute('failures')).to.equal('0');
+        expect(testSuite.getAttribute('errors')).to.equal('0');
 
         expect(select1('//property[@name=\'outcome\']', actualXml).getAttribute('value')).to.equal(deployResTest.status);
         expect(select1('//property[@name=\'testsRan\']', actualXml).getAttribute('value')).to.equal('2');
@@ -155,12 +159,14 @@ describe('xunit converter', () => {
         expect(actualXmlString).to.not.be.empty;
 
         const actualXml = create(actualXmlString).node;
-        expect(select('//testsuite', actualXml).length).to.equal(1);
-        //Check testsuite properties
-        expect(select1('//testsuite/@hostname', actualXml).value).to.equal(connectionDetails.loginUrl);
-        expect(select1('//testsuite/@tests', actualXml).value).to.equal('2');
-        expect(select1('//testsuite/@failures', actualXml).value).to.equal('2');
-        expect(select1('//testsuite/@errors', actualXml).value).to.equal('0');
+        const testSuites = select('//testSuite', actualXml);
+        expect(testSuites.length).to.equal(1);
+        const testSuite = testSuites[0];
+        //Check testSuite properties
+        expect(testSuite.getAttribute('hostname')).to.equal(connectionDetails.loginUrl);
+        expect(testSuite.getAttribute('tests')).to.equal('2');
+        expect(testSuite.getAttribute('failures')).to.equal('2');
+        expect(testSuite.getAttribute('errors')).to.equal('0');
 
         expect(select1('//property[@name=\'outcome\']', actualXml).getAttribute('value')).to.equal(deployResTest.status);
         expect(select1('//property[@name=\'testsRan\']', actualXml).getAttribute('value')).to.equal('2');

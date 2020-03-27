@@ -1,4 +1,5 @@
 import { XUnit } from './converters/xunit';
+import { XUnitNet } from './converters/xunitnet';
 
 export interface TestResultConverter {
     convert(deployResult, connData): string;
@@ -6,5 +7,6 @@ export interface TestResultConverter {
 }
 
 export default {
-    xunit: new XUnit()
+    xunit: new XUnit(),
+    xunitnet: new XUnitNet()
 };

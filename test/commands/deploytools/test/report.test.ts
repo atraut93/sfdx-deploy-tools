@@ -1,5 +1,4 @@
 import { expect, test } from '@salesforce/command/lib/test';
-// import { ensureJsonMap, ensureString } from '@salesforce/ts-types';
 
 describe('deploytools:test:report', () => {
   test
@@ -7,7 +6,7 @@ describe('deploytools:test:report', () => {
     .stderr()
     .stdout()
     .command(['deploytools:test:report', '--targetusername', 'test@org.com'])
-    .it('deploytools:test:report without required parameter should throw error', ctx => {
+    .it('without required parameters should throw error', ctx => {
       expect(ctx.stderr).to.contain('ERROR running deploytools:test:report');
     });
 
@@ -23,7 +22,7 @@ describe('deploytools:test:report', () => {
   //   .stderr()
   //   .stdout()
   //   .command(['deploytools:test:report', '--targetusername', 'test@org.com', '--deployid', '0Af123123123123123'])
-  //   .it('deploytools:test:report with latest parameter should display messages', ctx => {
+  //   .it('with latest parameter should display messages', ctx => {
   //     expect(ctx.stdout).to.contain('Getting deploy result');
   //     expect(ctx.stderr).to.be.empty;
   //   });
