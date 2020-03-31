@@ -20,7 +20,7 @@ $ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@andrew.trautmann/sfdx-deploy-tools/0.0.6 darwin-x64 node-v13.8.0
+@andrew.trautmann/sfdx-deploy-tools/0.0.7 darwin-x64 node-v13.8.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -79,5 +79,5 @@ EXAMPLES
   sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit
 ```
 
-_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.6/lib/commands/deploytools/test/report.js)_
+_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.7/lib/commands/deploytools/test/report.js)_
 <!-- commandsstop -->
