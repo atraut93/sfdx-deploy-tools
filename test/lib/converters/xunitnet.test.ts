@@ -7,6 +7,18 @@ const connectionDetails = {
     loginUrl: 'https://test.salesforce.com'
 };
 
+const padDateTime = (val): string => {
+    return ('0'.repeat(2) + val).substr(-2);
+};
+
+const getDateFormats = (dateString) => {
+    const dt = new Date(dateString);
+    return {
+        'date': `${dt.getFullYear()}-${padDateTime(dt.getMonth() + 1)}-${padDateTime(dt.getDate())}`,
+        'time': `${padDateTime(dt.getHours())}:${padDateTime(dt.getMinutes())}:${padDateTime(dt.getSeconds())}`
+    };
+};
+
 describe('xunit.net converter', () => {
     test.it('getFilename should return the expected value', () => {
         const xunit = new XUnitNet();
@@ -40,8 +52,9 @@ describe('xunit.net converter', () => {
         const assembly = assemblies[0];
 
         expect(assembly.getAttribute('environment')).to.equal(connectionDetails.loginUrl);
-        expect(assembly.getAttribute('run-date')).to.equal('2020-03-23');
-        expect(assembly.getAttribute('run-time')).to.equal('09:48:31');
+        const dateVals = getDateFormats(deployResTest.startDate);
+        expect(assembly.getAttribute('run-date')).to.equal(dateVals.date);
+        expect(assembly.getAttribute('run-time')).to.equal(dateVals.time);
         expect(assembly.getAttribute('total')).to.equal('0');
         expect(assembly.getAttribute('passed')).to.equal('0');
         expect(assembly.getAttribute('failed')).to.equal('0');
@@ -96,8 +109,9 @@ describe('xunit.net converter', () => {
         const assembly = assemblies[0];
 
         expect(assembly.getAttribute('environment')).to.equal(connectionDetails.loginUrl);
-        expect(assembly.getAttribute('run-date')).to.equal('2020-03-23');
-        expect(assembly.getAttribute('run-time')).to.equal('09:48:31');
+        const dateVals = getDateFormats(deployResTest.startDate);
+        expect(assembly.getAttribute('run-date')).to.equal(dateVals.date);
+        expect(assembly.getAttribute('run-time')).to.equal(dateVals.time);
         expect(assembly.getAttribute('total')).to.equal('2');
         expect(assembly.getAttribute('passed')).to.equal('2');
         expect(assembly.getAttribute('failed')).to.equal('0');
@@ -166,8 +180,9 @@ describe('xunit.net converter', () => {
         const assembly = assemblies[0];
 
         expect(assembly.getAttribute('environment')).to.equal(connectionDetails.loginUrl);
-        expect(assembly.getAttribute('run-date')).to.equal('2020-03-23');
-        expect(assembly.getAttribute('run-time')).to.equal('09:48:31');
+        const dateVals = getDateFormats(deployResTest.startDate);
+        expect(assembly.getAttribute('run-date')).to.equal(dateVals.date);
+        expect(assembly.getAttribute('run-time')).to.equal(dateVals.time);
         expect(assembly.getAttribute('total')).to.equal('2');
         expect(assembly.getAttribute('passed')).to.equal('0');
         expect(assembly.getAttribute('failed')).to.equal('2');
@@ -234,8 +249,9 @@ describe('xunit.net converter', () => {
         const assembly = assemblies[0];
 
         expect(assembly.getAttribute('environment')).to.equal(connectionDetails.loginUrl);
-        expect(assembly.getAttribute('run-date')).to.equal('2020-03-23');
-        expect(assembly.getAttribute('run-time')).to.equal('09:48:31');
+        const dateVals = getDateFormats(deployResTest.startDate);
+        expect(assembly.getAttribute('run-date')).to.equal(dateVals.date);
+        expect(assembly.getAttribute('run-time')).to.equal(dateVals.time);
         expect(assembly.getAttribute('total')).to.equal('2');
         expect(assembly.getAttribute('passed')).to.equal('2');
         expect(assembly.getAttribute('failed')).to.equal('0');
