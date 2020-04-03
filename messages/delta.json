@@ -1,0 +1,9 @@
+{
+  "commandDescription": "deploy only changed files from a given commit/branch",
+  "fromFlagDescription": "the commit/branch to deploy from",
+  "basedirFlagDescription": "the base directory where source files are stored",
+  "passthroughFlagDescription": "same as force:source:deploy command",
+  "spinnerGettingChanges": "Getting changed files",
+  "deployingMessage": "Deploying %d changed item(s)",
+  "nothingToDeploy": "No changes to deploy"
+}
