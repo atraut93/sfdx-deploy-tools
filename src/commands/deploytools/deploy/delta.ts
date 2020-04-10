@@ -107,7 +107,7 @@ export default class Delta extends SfdxCommand {
       const diffValues = await git.diff(['--name-only', '--diff-filter=d', this.flags.from, '--', path]);
       diffValues.split('\n').forEach(val => {
         if (val && val.trim().length > 0) {
-          allDiffs.push(val.trim());
+          allDiffs.push(val.trim().replace(/ /g, '\\ '));
         }
       });
     }
