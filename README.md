@@ -20,7 +20,7 @@ $ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@andrew.trautmann/sfdx-deploy-tools/0.0.7 darwin-x64 node-v13.8.0
+@andrew.trautmann/sfdx-deploy-tools/0.0.8-beta darwin-x64 node-v13.8.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -28,7 +28,56 @@ USAGE
 ```
 <!-- usagestop -->
 <!-- commands -->
+* [`sfdx deploytools:deploy:delta -f <string> [-c] [-g] [-l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg] [-o] [-r <array>] [-w <integer>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolsdeploydelta--f-string--c--g--l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg--o--r-array--w-integer--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx deploytools:test:report [-f xunit|xunitnet] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestreport--f-xunitxunitnet--i-string---l--s--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+
+## `sfdx deploytools:deploy:delta -f <string> [-c] [-g] [-l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg] [-o] [-r <array>] [-w <integer>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+deploy only changed files from a given commit/branch
+
+```
+USAGE
+  $ sfdx deploytools:deploy:delta -f <string> [-c] [-g] [-l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg] 
+  [-o] [-r <array>] [-w <integer>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel 
+  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -c, --checkonly                                                                   same as force:source:deploy command
+
+  -f, --from=from                                                                   (required) the commit/branch to
+                                                                                    deploy from
+
+  -g, --ignorewarnings                                                              same as force:source:deploy command
+
+  -l, --testlevel=(NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg)      same as force:source:deploy command
+
+  -o, --ignoreerrors                                                                same as force:source:deploy command
+
+  -r, --runtests=runtests                                                           same as force:source:deploy command
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  -w, --wait=wait                                                                   same as force:source:deploy command
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+  --quiet                                                                           nothing emitted stdout
+
+  --verbose                                                                         emit additional command output to
+                                                                                    stdout
+
+EXAMPLE
+  sfdx deploytools:deploy:delta -u <org alias>
+```
+
+_See code: [src/commands/deploytools/deploy/delta.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.8-beta/src/commands/deploytools/deploy/delta.ts)_
 
 ## `sfdx deploytools:test:report [-f xunit|xunitnet] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -79,5 +128,5 @@ EXAMPLES
   sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit
 ```
 
-_See code: [lib/commands/deploytools/test/report.js](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.7/lib/commands/deploytools/test/report.js)_
+_See code: [src/commands/deploytools/test/report.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.0.8-beta/src/commands/deploytools/test/report.ts)_
 <!-- commandsstop -->

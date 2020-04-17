@@ -65,7 +65,7 @@ export default class Delta extends SfdxCommand {
 
   private loggingEnabled;
 
-  private getPassthroughParams(): String {
+  private getPassthroughParams(): string {
     const paramList: string[] = [];
     if (this.flags.checkonly) {
       paramList.push(`-${Delta.flagsConfig.checkonly.char}`);
@@ -102,8 +102,7 @@ export default class Delta extends SfdxCommand {
     const allDiffs = [];
 
     if (this.loggingEnabled) { this.ux.startSpinner(messages.getMessage('spinnerGettingChanges')); }
-    for (let i = 0; i < sourcePaths.length; i++) {
-      const path = sourcePaths[i];
+    for (const path of sourcePaths) {
       const diffValues = await git.diff(['--name-only', '--diff-filter=d', this.flags.from, '--', path]);
       diffValues.split('\n').forEach(val => {
         if (val && val.trim().length > 0) {
@@ -121,6 +120,14 @@ export default class Delta extends SfdxCommand {
     if (this.loggingEnabled) { this.ux.startSpinner(messages.getMessage('deployingMessage', [allDiffs.length])); }
     const jsonResponse = await exec2JSON(`sfdx force:source:deploy -u ${this.org.getUsername()} -p ${allDiffs.join(',')} ${this.getPassthroughParams()} --json`);
     if (this.loggingEnabled) { this.ux.stopSpinner(); }
+
+    if (this.loggingEnabled && jsonResponse.exitCode > 0) {
+      this.ux.log('Deploy Failed');
+      this.ux.log('Failures:');
+      jsonResponse.result.forEach((element, idx: number) => {
+        this.ux.log(`${idx + 1}. ${element.type}: ${element.fullName}: ${element.problemType} ${element.error}`);
+      });
+    }
 
     // Return an object to be displayed with --json
     return (jsonResponse && jsonResponse.result) ? jsonResponse.result : jsonResponse;
