@@ -2,9 +2,9 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 
-import converters from '../../../lib/converters';
-import { TestResultConverter } from '../../../lib/converters';
 import { exec2String } from '../../../lib/exec';
+import converters from '../../../lib/report/converters';
+import { TestResultConverter } from '../../../lib/report/converters';
 
 import { writeFileSync } from 'fs';
 import * as mkdirp from 'mkdirp';

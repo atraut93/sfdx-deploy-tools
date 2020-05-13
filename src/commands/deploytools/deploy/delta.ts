@@ -3,6 +3,7 @@ import { Messages } from '@salesforce/core';
 import { AnyJson, ensureArray } from '@salesforce/ts-types';
 import * as gitP from 'simple-git/promise';
 import { SimpleGit } from 'simple-git/promise';
+import { CodeStructure } from '../../../lib/coverage/converters';
 import { exec2JSON } from '../../../lib/exec';
 
 const git: SimpleGit = gitP();
@@ -85,6 +86,9 @@ export default class Delta extends SfdxCommand {
 
     if (this.flags.runtests && this.flags.runtests.length > 0) {
       paramList.push(`-${Delta.flagsConfig.runtests.char} ${this.flags.runtests.join(',')}`);
+      if (!this.flags.testlevel || this.flags.testlevel.length < 0) {
+        paramList.push(`-${Delta.flagsConfig.testlevel.char} RunSpecifiedTests`);
+      }
     }
 
     if (this.flags.wait || this.flags.wait === 0) {
@@ -97,16 +101,16 @@ export default class Delta extends SfdxCommand {
   public async run(): Promise<AnyJson> {
     this.loggingEnabled = (!this.flags.quiet && !this.flags.json);
     const projectConfig = await this.project.resolveProjectConfig();
-    const sourcePaths = ensureArray(projectConfig.packageDirectories).map(value => value['path']);
+    const sourcePaths: CodeStructure[] = ensureArray(projectConfig.packageDirectories).map(value => new CodeStructure(value['default'], value['path']));
 
     const allDiffs = [];
 
     if (this.loggingEnabled) { this.ux.startSpinner(messages.getMessage('spinnerGettingChanges')); }
     for (const path of sourcePaths) {
-      const diffValues = await git.diff(['--name-only', '--diff-filter=d', this.flags.from, '--', path]);
+      const diffValues = await git.diff(['--name-only', '--diff-filter=d', this.flags.from, '--', path.sourcePath]);
       diffValues.split('\n').forEach(val => {
         if (val && val.trim().length > 0) {
-          allDiffs.push(val.trim().replace(/ /g, '\\ '));
+          allDiffs.push(val.trim().replace(/ /g, '\\ ').replace(/\$/g, '\\$'));
         }
       });
     }
@@ -124,9 +128,17 @@ export default class Delta extends SfdxCommand {
     if (this.loggingEnabled && jsonResponse.exitCode > 0) {
       this.ux.log('Deploy Failed');
       this.ux.log('Failures:');
-      jsonResponse.result.forEach((element, idx: number) => {
-        this.ux.log(`${idx + 1}. ${element.type}: ${element.fullName}: ${element.problemType} ${element.error}`);
-      });
+      if (jsonResponse.result) {
+        jsonResponse.result.forEach((element, idx: number) => {
+          if (element.error === 'Unknown') {
+            this.ux.log(`${idx + 1}. Unknown error; check the deploy result in Salesforce or run \`sfdx force:source:deploy:report\``);
+          } else {
+            this.ux.log(`${idx + 1}. ${element.type}: ${element.fullName}: ${element.problemType} ${element.error}`);
+          }
+        });
+      } else if (jsonResponse.message) {
+        this.ux.log(`1. ${jsonResponse.message}`);
+      }
     }
 
     // Return an object to be displayed with --json

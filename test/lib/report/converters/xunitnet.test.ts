@@ -1,5 +1,5 @@
 import { expect, test } from '@salesforce/command/lib/test';
-import { XUnitNet } from '../../../src/lib/converters/xunitnet';
+import { XUnitNet } from '../../../../src/lib/report/converters/xunitnet';
 import { create } from 'xmlbuilder2';
 import { select } from 'xpath';
 

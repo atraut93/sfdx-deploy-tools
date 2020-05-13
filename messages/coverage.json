@@ -1,0 +1,9 @@
+{
+  "commandDescription": "retrieve code coverage data in a specified format",
+  "formatFlagDescription": "the format to save the coverage in",
+  "outputdirFlagDescription": "the directory to store the generated code coverage report in",
+  "errorNoOrgResults": "No results found for the org '%s'.",
+  "spinnerGettingCoverageResults": "Getting code coverage",
+  "spinnerProcessingTestResults": "Processing coverage",
+  "spinnerWritingFile": "Writing file to %s"
+}
