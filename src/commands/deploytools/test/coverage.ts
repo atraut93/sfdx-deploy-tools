@@ -60,7 +60,8 @@ export default class Report extends SfdxCommand {
     if (!this.flags.quiet && !this.flags.json) { this.ux.startSpinner(messages.getMessage('spinnerProcessingTestResults')); }
     const aggregateTestResults = new Map<string, CodeCoverageSummary>();
 
-    testResults.records.forEach(element => {
+    // tslint:disable-next-line
+    testResults.records.forEach((element: any) => {
       const classTrigName = element.ApexClassOrTrigger.Name;
       // let coverageObj;
       if (!aggregateTestResults.has(classTrigName)) {
