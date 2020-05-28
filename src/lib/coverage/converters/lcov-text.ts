@@ -4,6 +4,10 @@ import { CodeCoverageConverter, CodeCoverageSummary, CodeStructure, CodeType } f
 
 export class LCovText implements CodeCoverageConverter {
     public convert = (coverageData: Map<string, CodeCoverageSummary>, codeDirectories: CodeStructure[]): string => {
+        if (!coverageData || coverageData.size === 0 || !codeDirectories || codeDirectories.length === 0) {
+            return '';
+        }
+
         const defaultDir = codeDirectories.length > 1 ? codeDirectories.find((d: CodeStructure) => d.isDefault) : codeDirectories[0];
 
         const outputLines: string[] = [];
