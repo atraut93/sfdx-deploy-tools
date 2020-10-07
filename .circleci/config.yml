@@ -21,6 +21,8 @@ jobs:
           name: Submitting code coverage to codecov
           command: |
             bash <(curl -s https://codecov.io/bash) -f coverage/lcov.info
+      - store_test_results:
+          path: test-results
   node-10:
     <<: *test
     docker:
