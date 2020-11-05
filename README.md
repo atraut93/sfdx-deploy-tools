@@ -20,7 +20,7 @@ $ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@andrew.trautmann/sfdx-deploy-tools/0.2.0-beta darwin-x64 node-v14.2.0
+@andrew.trautmann/sfdx-deploy-tools/0.2.1-beta darwin-x64 node-v14.2.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -80,7 +80,7 @@ EXAMPLE
   sfdx deploytools:deploy:delta -u <org alias>
 ```
 
-_See code: [src/commands/deploytools/deploy/delta.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/deploy/delta.ts)_
+_See code: [src/commands/deploytools/deploy/delta.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.1-beta/src/commands/deploytools/deploy/delta.ts)_
 
 ## `sfdx deploytools:retrieve:dashboards [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -118,7 +118,7 @@ EXAMPLE
   sfdx deploytools:retrieve:dashboards -u <org alias>
 ```
 
-_See code: [src/commands/deploytools/retrieve/dashboards.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/retrieve/dashboards.ts)_
+_See code: [src/commands/deploytools/retrieve/dashboards.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.1-beta/src/commands/deploytools/retrieve/dashboards.ts)_
 
 ## `sfdx deploytools:retrieve:reports [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -156,7 +156,7 @@ EXAMPLE
   sfdx deploytools:retrieve:reports -u <org alias>
 ```
 
-_See code: [src/commands/deploytools/retrieve/reports.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/retrieve/reports.ts)_
+_See code: [src/commands/deploytools/retrieve/reports.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.1-beta/src/commands/deploytools/retrieve/reports.ts)_
 
 ## `sfdx deploytools:test:coverage [-f lcov-text] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -195,7 +195,7 @@ EXAMPLES
   sfdx deploytools:test:coverage -u <org alias> -f lcov-text
 ```
 
-_See code: [src/commands/deploytools/test/coverage.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/test/coverage.ts)_
+_See code: [src/commands/deploytools/test/coverage.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.1-beta/src/commands/deploytools/test/coverage.ts)_
 
 ## `sfdx deploytools:test:report [-f xunit|xunitnet] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -246,5 +246,5 @@ EXAMPLES
   sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit
 ```
 
-_See code: [src/commands/deploytools/test/report.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/test/report.ts)_
+_See code: [src/commands/deploytools/test/report.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.1-beta/src/commands/deploytools/test/report.ts)_
 <!-- commandsstop -->
