@@ -1,6 +1,6 @@
 {
   "name": "@andrew.trautmann/sfdx-deploy-tools",
-  "version": "0.1.0-beta",
+  "version": "0.2.0-beta",
   "author": "Andrew Trautmann",
   "bugs": "https://github.com/atraut93/sfdx-deploy-tools/issues",
   "dependencies": {
@@ -49,8 +49,13 @@
   "license": "MIT",
   "mocha": {
     "recursive": true,
-    "reporter": ["spec", "xunit"],
-    "reporterOption": ["output=test-results/xunit/results.xml"],
+    "reporter": [
+      "spec",
+      "xunit"
+    ],
+    "reporterOption": [
+      "output=test-results/xunit/results.xml"
+    ],
     "require": "ts-node/register",
     "timeout": 5000
   },
@@ -70,6 +75,9 @@
         "subtopics": {
           "deploy": {
             "description": "Commands to help with deploying metadata"
+          },
+          "retrieve": {
+            "description": "Commands to help with retrieving metadata"
           },
           "test": {
             "description": "Commands to help with tests run for a given deploy."

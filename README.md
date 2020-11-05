@@ -20,7 +20,7 @@ $ npm install -g @andrew.trautmann/sfdx-deploy-tools
 $ sfdx COMMAND
 running command...
 $ sfdx (-v|--version|version)
-@andrew.trautmann/sfdx-deploy-tools/0.1.0-beta darwin-x64 node-v13.8.0
+@andrew.trautmann/sfdx-deploy-tools/0.2.0-beta darwin-x64 node-v14.2.0
 $ sfdx --help [COMMAND]
 USAGE
   $ sfdx COMMAND
@@ -29,6 +29,8 @@ USAGE
 <!-- usagestop -->
 <!-- commands -->
 * [`sfdx deploytools:deploy:delta -f <string> [-c] [-g] [-l NoTestRun|RunSpecifiedTests|RunLocalTests|RunAllTestsInOrg] [-o] [-r <array>] [-w <integer>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolsdeploydelta--f-string--c--g--l-notestrunrunspecifiedtestsrunlocaltestsrunalltestsinorg--o--r-array--w-integer--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx deploytools:retrieve:dashboards [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolsretrievedashboards--f-array--m--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx deploytools:retrieve:reports [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolsretrievereports--f-array--m--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx deploytools:test:coverage [-f lcov-text] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestcoverage--f-lcov-text--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx deploytools:test:report [-f xunit|xunitnet] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-deploytoolstestreport--f-xunitxunitnet--i-string---l--s--d-directory--u-string---apiversion-string---quiet---verbose---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
@@ -78,7 +80,83 @@ EXAMPLE
   sfdx deploytools:deploy:delta -u <org alias>
 ```
 
-_See code: [src/commands/deploytools/deploy/delta.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.1.0-beta/src/commands/deploytools/deploy/delta.ts)_
+_See code: [src/commands/deploytools/deploy/delta.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/deploy/delta.ts)_
+
+## `sfdx deploytools:retrieve:dashboards [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+retrieve all dashboards or dashboards from a given folder
+
+```
+USAGE
+  $ sfdx deploytools:retrieve:dashboards [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] 
+  [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -f, --folders=folders                                                             the folders to include; if not
+                                                                                    specified, retrieves all dashboards
+
+  -m, --managed                                                                     if specified, managed dashboards
+                                                                                    will be retrieved as well
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+  --quiet                                                                           nothing emitted stdout
+
+  --verbose                                                                         emit additional command output to
+                                                                                    stdout
+
+EXAMPLE
+  sfdx deploytools:retrieve:dashboards -u <org alias>
+```
+
+_See code: [src/commands/deploytools/retrieve/dashboards.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/retrieve/dashboards.ts)_
+
+## `sfdx deploytools:retrieve:reports [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+retrieve all reports or reports from a given folder
+
+```
+USAGE
+  $ sfdx deploytools:retrieve:reports [-f <array>] [-m] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] 
+  [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -f, --folders=folders                                                             the folders to include; if not
+                                                                                    specified, retrieves all reports
+
+  -m, --managed                                                                     if specified, managed reports will
+                                                                                    be retrieved as well
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+  --quiet                                                                           nothing emitted stdout
+
+  --verbose                                                                         emit additional command output to
+                                                                                    stdout
+
+EXAMPLE
+  sfdx deploytools:retrieve:reports -u <org alias>
+```
+
+_See code: [src/commands/deploytools/retrieve/reports.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/retrieve/reports.ts)_
 
 ## `sfdx deploytools:test:coverage [-f lcov-text] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -117,7 +195,7 @@ EXAMPLES
   sfdx deploytools:test:coverage -u <org alias> -f lcov-text
 ```
 
-_See code: [src/commands/deploytools/test/coverage.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.1.0-beta/src/commands/deploytools/test/coverage.ts)_
+_See code: [src/commands/deploytools/test/coverage.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/test/coverage.ts)_
 
 ## `sfdx deploytools:test:report [-f xunit|xunitnet] [-i <string> | -l] [-s] [-d <directory>] [-u <string>] [--apiversion <string>] [--quiet] [--verbose] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
@@ -168,5 +246,5 @@ EXAMPLES
   sfdx deploytools:test:report -u <org alias> -i <deploy id> -d test-results -f xunit
 ```
 
-_See code: [src/commands/deploytools/test/report.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.1.0-beta/src/commands/deploytools/test/report.ts)_
+_See code: [src/commands/deploytools/test/report.ts](https://github.com/atraut93/sfdx-deploy-tools/blob/v0.2.0-beta/src/commands/deploytools/test/report.ts)_
 <!-- commandsstop -->
