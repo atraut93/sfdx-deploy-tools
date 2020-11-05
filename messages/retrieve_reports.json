@@ -1,0 +1,9 @@
+{
+  "commandDescription": "retrieve all reports or reports from a given folder",
+  "foldersFlagDescription": "the folders to include; if not specified, retrieves all reports",
+  "managedFlagDescription": "if specified, managed reports will be retrieved as well",
+  "spinnerGettingNames": "Getting report names",
+  "spinnerParsing": "Parsing report names",
+  "spinnerRetrieving": "Retrieving %d report(s)",
+  "noResults": "No reports were found matching the specified criteria"
+}

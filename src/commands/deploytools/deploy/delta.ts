@@ -127,8 +127,8 @@ export default class Delta extends SfdxCommand {
 
     if (this.loggingEnabled && jsonResponse.exitCode > 0) {
       this.ux.log('Deploy Failed');
-      this.ux.log('Failures:');
-      if (jsonResponse.result) {
+      if (jsonResponse.name === 'DeployFailed' && jsonResponse.result && Array.isArray(jsonResponse.result)) {
+        this.ux.log('Deploy Failures:');
         jsonResponse.result.forEach((element, idx: number) => {
           if (element.error === 'Unknown') {
             this.ux.log(`${idx + 1}. Unknown error; check the deploy result in Salesforce or run \`sfdx force:source:deploy:report\``);
@@ -136,6 +136,14 @@ export default class Delta extends SfdxCommand {
             this.ux.log(`${idx + 1}. ${element.type}: ${element.fullName}: ${element.problemType} ${element.error}`);
           }
         });
+      } else if (jsonResponse.name === 'testFailure' && jsonResponse.result && jsonResponse.result.details && jsonResponse.result.details.runTestResult) {
+        let testResults = jsonResponse.result.details.runTestResult;
+        this.ux.log(`${testResults.numFailures} of ${testResults.numTestsRun} tests failed`);
+        if (testResults.failures && Array.isArray(testResults.failures)) {
+          testResults.failures.forEach((element, idx: number) => {
+            this.ux.log(`${idx + 1}. ${element.stackTrace}\n\t${element.message}`);
+          });
+        }
       } else if (jsonResponse.message) {
         this.ux.log(`1. ${jsonResponse.message}`);
       }

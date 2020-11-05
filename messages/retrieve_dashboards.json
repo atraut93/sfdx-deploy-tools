@@ -1,0 +1,9 @@
+{
+  "commandDescription": "retrieve all dashboards or dashboards from a given folder",
+  "foldersFlagDescription": "the folders to include; if not specified, retrieves all dashboards",
+  "managedFlagDescription": "if specified, managed dashboards will be retrieved as well",
+  "spinnerGettingNames": "Getting dashboard names",
+  "spinnerParsing": "Parsing dashboard names",
+  "spinnerRetrieving": "Retrieving %d dashboard(s)",
+  "noResults": "No dashboards were found matching the specified criteria"
+}
