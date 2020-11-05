@@ -137,7 +137,7 @@ export default class Delta extends SfdxCommand {
           }
         });
       } else if (jsonResponse.name === 'testFailure' && jsonResponse.result && jsonResponse.result.details && jsonResponse.result.details.runTestResult) {
-        let testResults = jsonResponse.result.details.runTestResult;
+        const testResults = jsonResponse.result.details.runTestResult;
         this.ux.log(`${testResults.numFailures} of ${testResults.numTestsRun} tests failed`);
         if (testResults.failures && Array.isArray(testResults.failures)) {
           testResults.failures.forEach((element, idx: number) => {
