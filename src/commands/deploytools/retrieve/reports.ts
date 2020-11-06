@@ -42,7 +42,6 @@ export default class Delta extends SfdxCommand {
 
   public async run(): Promise<AnyJson> {
     this.loggingEnabled = (!this.flags.quiet && !this.flags.json);
-    let jsonResponse: AnyJson = {};
 
     const conn = this.org.getConnection();
 
@@ -52,7 +51,8 @@ export default class Delta extends SfdxCommand {
     const allFolders = await conn.autoFetchQuery('SELECT Name, DeveloperName FROM Folder WHERE Type = \'Report\'');
     const foldersByName = new Map<string, string>();
     const foldersByNameDevName = new Map<string, string>();
-    allFolders.records.forEach(f => {
+    // TODO: replace any with a more specific type
+    allFolders.records.forEach((f: any) => {
       foldersByNameDevName.set(f.Name, f.Name);
       foldersByNameDevName.set(f.DeveloperName, f.Name);
       foldersByName.set(f.Name, f.DeveloperName);
@@ -64,7 +64,7 @@ export default class Delta extends SfdxCommand {
       conditions.push('NamespacePrefix = null');
     }
     if (this.flags.folders && this.flags.folders.length > 0) {
-      const tempFolders = this.flags.folders.map(f => foldersByNameDevName.get(f));
+      const tempFolders = this.flags.folders.map((f: string) => foldersByNameDevName.get(f));
       conditions.push(`FolderName IN ('${tempFolders.join('\', \'')}')`);
     }
     if (conditions.length > 0) {
@@ -82,7 +82,8 @@ export default class Delta extends SfdxCommand {
     // parse out and create package file (if needed)
     if (this.loggingEnabled) { this.ux.startSpinner(messages.getMessage('spinnerParsing')); }
     const itemsToRetrieve = new Set<string>();
-    reportResults.records.forEach(report => {
+    // TODO: replace any with a more specific type
+    reportResults.records.forEach((report: any) => {
       const folderDevName = foldersByName.get(report.FolderName) || 'unfiled$public';
       if (folderDevName !== 'unfiled$public') {
         itemsToRetrieve.add(folderDevName);
@@ -95,7 +96,7 @@ export default class Delta extends SfdxCommand {
     if (this.loggingEnabled) { this.ux.startSpinner(messages.getMessage('spinnerRetrieving', [itemsToRetrieve.size])); }
     const types = [];
     itemsToRetrieve.forEach(item => types.push(`Report:${item}`));
-    jsonResponse = await exec2JSON(`sfdx force:source:retrieve -u ${this.org.getUsername()} -m ${types.join(',')} --json`);
+    const jsonResponse = await exec2JSON(`sfdx force:source:retrieve -u ${this.org.getUsername()} -m ${types.join(',')} --json`);
     if (this.loggingEnabled) { this.ux.stopSpinner(); }
 
     // Return an object to be displayed with --json
